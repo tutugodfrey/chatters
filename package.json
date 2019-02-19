@@ -1,0 +1,37 @@
+{
+  "name": "chatters",
+  "version": "1.0.0",
+  "description": "A chatting application build with graphQL",
+  "main": "src/index.js",
+  "dependencies": {
+    "apollo-server-express": "^2.4.2",
+    "dotenv-safe": "^6.1.0",
+    "esm": "^3.2.5",
+    "express": "^4.16.4",
+    "graphql": "^14.1.1",
+    "mongoose": "^5.4.13",
+    "nodemon": "^1.18.10",
+    "standard": "^12.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_ENV=production node -r esm",
+    "dev": "NODE_ENV=development APP_PORT=5000 nodemon -r esm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tutugodfrey/chatters.git"
+  },
+  "keywords": [
+    "Graphql",
+    "Javascript",
+    "Mongoose"
+  ],
+  "author": "Tutu Godfrey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tutugodfrey/chatters/issues"
+  },
+  "homepage": "https://github.com/tutugodfrey/chatters#readme"
+}
