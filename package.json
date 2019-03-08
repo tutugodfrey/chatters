@@ -5,19 +5,25 @@
   "main": "src/index.js",
   "dependencies": {
     "apollo-server-express": "^2.4.2",
+    "bcryptjs": "^2.4.3",
+    "connect-redis": "^3.4.0",
     "dotenv-safe": "^6.1.0",
     "esm": "^3.2.5",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
     "graphql": "^14.1.1",
-    "mongoose": "^5.4.13",
+    "joi": "^14.3.1",
+    "mongoose": "^5.4.17",
     "nodemon": "^1.18.10",
+    "redis": "^2.8.0",
     "standard": "^12.0.1"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=production node -r esm",
-    "dev": "NODE_ENV=development APP_PORT=5000 nodemon -r esm"
+    "dev": "NODE_ENV=development APP_PORT=5000 nodemon -r esm",
+    "seed": "node -r esm ./src/seed/user"
   },
   "repository": {
     "type": "git",
@@ -26,7 +32,8 @@
   "keywords": [
     "Graphql",
     "Javascript",
-    "Mongoose"
+    "Mongoose",
+    "Redis"
   ],
   "author": "Tutu Godfrey",
   "license": "ISC",
