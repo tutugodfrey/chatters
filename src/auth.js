@@ -3,15 +3,23 @@ import { User } from './models'
 import { SESS_NAME } from '../src/config'
 
 const signedIn = req => req.session.userId
+const userExist = async (req) => {
+  const user = await User.findById(req.session.userId)
+  return user
+}
 
-export const checkSignedIn = req => {
+export const ensureSignedIn = req => {
   if (!signedIn(req)) {
     throw new AuthenticationError('You must be signed in.')
   }
 }
 
-export const checkSignedOut = req => {
-  if (signedIn(req)) {
+export const ensureSignedOut = req => {
+  // Check that user have active session
+  // also check that user exist in the database
+  const user = signedIn(req)
+  const checkUser = userExist(req)
+  if (user & checkUser) {
     throw new AuthenticationError('You are already singned in.')
   }
 }
