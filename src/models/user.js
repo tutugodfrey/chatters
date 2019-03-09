@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import { hash, compare, compareSync } from 'bcryptjs'
+import mongoose, { Schema } from 'mongoose'
+import { hash, compare } from 'bcryptjs'
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
     }
   },
   name: String,
+  chats: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Chat'
+  }],
   password: String,
   isAdmin: {
     type: Boolean,

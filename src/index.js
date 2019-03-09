@@ -16,6 +16,7 @@ import {
   REDIS_PORT,
   REDIS_PASSWORD
 } from './config'
+import schemaDirectives from './directives';
 
 (async () => {
   try {
@@ -34,10 +35,11 @@ import {
       store,
       name: SESS_NAME,
       secret: SESS_SECRET,
-      resave: false,
+      resave: true,
+      rolling: true,
       saveUninitialized: false,
       cookie: {
-        maxAge: SESS_LIFETIME,
+        maxAge: parseInt(SESS_LIFETIME),
         sameSite: true,
         secure: IN_PROD
       }
@@ -47,7 +49,7 @@ import {
     const server = new ApolloServer({
       typeDefs,
       resolvers,
-      cors: false,
+      schemaDirectives,
       playground: IN_PROD ? false : {
         settings: {
           'request.credentials': 'include'
@@ -56,7 +58,7 @@ import {
       context: ({ req, res }) => ({ req, res })
     })
 
-    server.applyMiddleware({ app })
+    server.applyMiddleware({ app, cors: false })
     app.listen({ port: APP_PORT }, () => {
       console.log(`View app on http://localhost:${APP_PORT}${server.graphqlPath}`)
     })
