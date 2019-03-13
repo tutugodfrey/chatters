@@ -1,20 +1,12 @@
 import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 import mongoose from 'mongoose'
-import session from 'express-session'
-import connectRedis from 'connect-redis'
 import typeDefs from './typeDefs'
 import resolvers from './resolvers'
 import {
   APP_PORT,
   IN_PROD,
-  DATABASE_URL,
-  SESS_NAME,
-  SESS_SECRET,
-  SESS_LIFETIME,
-  REDIS_HOST,
-  REDIS_PORT,
-  REDIS_PASSWORD
+  DATABASE_URL
 } from './config'
 import schemaDirectives from './directives';
 
@@ -25,26 +17,6 @@ import schemaDirectives from './directives';
       useNewUrlParser: true
     })
     const app = express()
-    const RedisStore = connectRedis(session)
-    const store = new RedisStore({
-      host: REDIS_HOST,
-      port: REDIS_PORT,
-      pass: REDIS_PASSWORD
-    })
-    app.use(session({
-      store,
-      name: SESS_NAME,
-      secret: SESS_SECRET,
-      resave: true,
-      rolling: true,
-      saveUninitialized: false,
-      cookie: {
-        maxAge: parseInt(SESS_LIFETIME),
-        sameSite: true,
-        secure: IN_PROD
-      }
-    }))
-
     app.disable('x-powered-by')
     const server = new ApolloServer({
       typeDefs,

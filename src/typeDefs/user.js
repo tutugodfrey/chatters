@@ -8,9 +8,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  signUp(email: String!, username: String!, name: String! password: String!): User @guest
-  signIn(email: String!, password: String!): User @guest
-  signOut: Boolean @auth
+  signUp(email: String!, username: String!, name: String! password: String!): User
+  signIn(email: String!, password: String!): User
   deleteUser(id: ID!): String @auth
 }
 
@@ -22,5 +21,6 @@ type User {
   chats: [Chat]
   createdAt: String!
   isAdmin: Boolean
+  token: String
 }
 `

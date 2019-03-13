@@ -6,8 +6,8 @@ export default {
     messages: async (root, args, context, info) => {
       const { chatId } = args
       const { req } = context
-      const { userId } = req.session
-      const userExist = await checkUserChat(userId, chatId)
+      const { id } = req.headers.user
+      const userExist = await checkUserChat(id, chatId)
 
       // users must below to the chat of the message
       if (userExist) {
@@ -17,9 +17,9 @@ export default {
     message: async (root, args, context, info) => {
       const { messageId } = args
       const { req } = context
-      const { userId } = req.session
+      const { id } = req.headers.user
       const message = await Message.findById(messageId)
-      const userExist = checkUserChat(userId, message.chat)
+      const userExist = checkUserChat(id, message.chat)
       if (userExist) {
         return [message]
       }
@@ -29,17 +29,17 @@ export default {
     sendMessage: async (root, args, context, info) => {
       const { body, chatId } = args
       const { req } = context
-      const { userId } = req.session
-      const userExist = checkUserChat(userId, chatId)
+      const { id } = req.headers.user
+      const userExist = checkUserChat(id, chatId)
       if (userExist) {
-        const message = await Message.create({ body, sender: userId, chat: chatId })
+        const message = await Message.create({ body, sender: id, chat: chatId })
         return message
       }
     },
     updateMessage: async (root, args, context, info) => {
       const { messageId, body } = args
       const { req } = context
-      const { userId } = req.session
+      const { id } = req.headers.user
       const query = { _id: messageId }
       const data = {
         body
@@ -48,7 +48,7 @@ export default {
         new: true
       }
       const message = Message.findById(messageId)
-      const userExist = checkUserChat(userId, message.chat)
+      const userExist = checkUserChat(id, message.chat)
       if (userExist) {
         const newMessage = await Message.findOneAndUpdate(query, data, options)
         return newMessage
@@ -57,9 +57,9 @@ export default {
     deleteMessage: async (root, args, context, info) => {
       const { messageId } = args
       const { req } = context
-      const { userId } = req.session
+      const { id } = req.headers.user
       const message = Message.findById(messageId)
-      const userExist = await checkUserChat(userId, message.chat)
+      const userExist = await checkUserChat(id, message.chat)
       if (userExist) {
         const result = await Message.deleteOne({ _id: messageId })
         if (result.deletedCount === 1) {
