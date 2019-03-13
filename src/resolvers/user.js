@@ -1,12 +1,15 @@
 import { User } from '../models'
 import Joi from 'joi'
+import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from '../config'
+
 import { signUp, signIn, objectId } from '../schemas'
-import { attemptSignIn, signOut, isAdmin } from '../auth'
+import { attemptSignIn, isAdmin } from '../auth'
 export default {
   Query: {
     signedInUser: (root, args, context, info) => {
       const { req } = context
-      return User.findById(req.session.userId)
+      return User.findById(req.headers.user.id)
     },
     users: (root, args, context, info) => {
       return User.find({})
@@ -19,33 +22,36 @@ export default {
   },
   Mutation: {
     signUp: async (root, args, context, info) => {
-      const { req } = context
       await Joi.validate(args, signUp, { abortEarly: false })
       const user = await User.create(args)
-      req.session.userId = user.id
-      return user
+      const payload = {
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        id: user.id
+      }
+      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 60 * 60 })
+      payload.token = token
+      return payload
     },
     signIn: async (root, args, context, info) => {
-      const { req } = context
       const { email, password } = args
       await Joi.validate(args, signIn, { abortEarly: false })
       const user = await attemptSignIn(email, password)
-      req.session.userId = user.id
       return user
     },
-    signOut: (root, args, context, info) => {
-      const { req, res } = context
-      return signOut(req, res)
-    },
+
     deleteUser: async (root, args, context, info) => {
       const { req } = context
-      const user = await isAdmin(req.session.userId)
+      const user = await isAdmin(req.headers.user.id)
       if (user) {
-        User.remove({ _id: args.id }, (err, user) => {
+        User.deleteOne({ _id: args.id }, (err, result) => {
           if (err) {
             return 'no user found'
           }
-          return 'user successfully deleted'
+          if (result.deletedCount === 1) {
+            return 'user successfully deleted'
+          }
         })
       }
     }

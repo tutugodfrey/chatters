@@ -5,9 +5,9 @@ import { ensureSignedIn } from '../auth'
 class AuthDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition (field) {
     const { resolve = defaultFieldResolver } = field
-    field.resolve = function (...args) {
+    field.resolve = async function (...args) {
       const [ , , context ] = args
-      ensureSignedIn(context.req)
+      await ensureSignedIn(context.req)
       return resolve.apply(this, args)
     }
   }

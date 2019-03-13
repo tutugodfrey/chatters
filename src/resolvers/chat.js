@@ -9,14 +9,14 @@ export default {
   Query: {
     chats: (root, args, context, info) => {
       const { req } = context
-      const { userId } = req.session
-      return Chat.find({ users: { $in: [userId] } })
+      const { id } = req.headers.user
+      return Chat.find({ users: { $in: [id] } })
     },
     chat: async (root, args, context, info) => {
       const { chatId } = args
       const { req } = context
-      const { userId } = req.session
-      const userExist = checkUserChat(userId, chatId)
+      const { id } = req.headers.user
+      const userExist = checkUserChat(id, chatId)
       if (userExist) {
         return Chat.findById(chatId)
       }
@@ -26,13 +26,13 @@ export default {
     startChat: async (root, args, context, info) => {
       const { req } = context
       const { title, userIds } = args
-      const { userId } = req.session
-      await Joi.validate(args, startChat(userId), { abortEarly: false })
+      const { id } = req.headers.user
+      await Joi.validate(args, startChat(id), { abortEarly: false })
       const idsFound = await User.where('_id').in(userIds).countDocuments()
       if (idsFound !== userIds.length) {
         throw new UserInputError('One or more User IDs are invalid.')
       }
-      userIds.push(userId)
+      userIds.push(id)
       const chat = await Chat.create({ title, users: userIds })
       await User.updateMany({ _id: { '$in': userIds } }, {
         $push: { chats: chat }
@@ -42,14 +42,14 @@ export default {
     updateChat: async (root, args, context, info) => {
       const { chatId, title, userIds } = args
       const { req } = context
-      const { userId } = req.session
+      const { id } = req.headers.user
       const chat = await Chat.findById(chatId)
-      const userExist = await checkUserChat(userId, chatId)
+      const userExist = await checkUserChat(id, chatId)
       const users = chat.users
       if (userExist) {
-        for (let user of userIds) {
-          if (users.indexOf(user) === -1) {
-            users.push(user)
+        for (let id of userIds) {
+          if (users.indexOf(id) === -1) {
+            users.push(id)
           }
         }
         const query = {
@@ -68,8 +68,8 @@ export default {
     deleteChat: async (root, args, context, info) => {
       const { chatId } = args
       const { req } = context
-      const { userId } = req.session
-      const userExist = await checkUserChat(userId, chatId)
+      const { id } = req.headers.user
+      const userExist = await checkUserChat(id, chatId)
       if (userExist) {
         const result = await Chat.deleteOne({ _id: chatId })
         if (result.deletedCount === 1) {
@@ -82,8 +82,8 @@ export default {
     removeUser: async (root, args, context, info) => {
       const { userToDelete, chatId } = args
       const { req } = context
-      const { userId } = req.session
-      const userExist = await checkUserChat(userId, chatId)
+      const { id } = req.headers.user
+      const userExist = await checkUserChat(id, chatId)
       if (userExist) {
         const chat = await Chat.findById(chatId)
         const { users } = chat

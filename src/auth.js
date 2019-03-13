@@ -1,17 +1,21 @@
 import { AuthenticationError } from 'apollo-server-express'
+import jwt from 'jsonwebtoken'
 import { User, Chat } from './models'
-import { SESS_NAME } from '../src/config'
+import { JWT_SECRET } from '../src/config'
 
-const signedIn = req => req.session.userId
+const signedIn = req => req.headers.token
 const userExist = async (req) => {
   const user = await User.findById(req.session.userId)
   return user
 }
 
-export const ensureSignedIn = req => {
-  if (!signedIn(req)) {
-    throw new AuthenticationError('You must be signed in.')
-  }
+export const ensureSignedIn = async req => {
+  const token = signedIn(req)
+  if (!token) throw new AuthenticationError('Please provide a token.')
+  const user = await jwt.verify(token, JWT_SECRET)
+
+  // add user detail to req header
+  req.headers.user = user
 }
 
 export const ensureSignedOut = req => {
@@ -33,18 +37,16 @@ export const attemptSignIn = async (email, password) => {
   if (!await user.matchesPassword(password)) {
     throw new AuthenticationError(message)
   }
+  const payload = {
+    name: user.name,
+    email: user.email,
+    username: user.username,
+    id: user.id
+  }
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 60 * 60 })
+  user.token = token
   return user
 }
-
-export const signOut = (req, res) => new Promise(
-  (resolve, reject) => {
-    req.session.destroy(err => {
-      if (err) reject(err)
-      res.clearCookie(SESS_NAME)
-      resolve(true)
-    })
-  }
-)
 
 export const isAdmin = async (id) => {
   const user = await User.findById(id)
