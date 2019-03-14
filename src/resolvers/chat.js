@@ -1,4 +1,4 @@
-import Joi from 'Joi'
+import Joi from 'joi'
 import { UserInputError } from 'apollo-server-express'
 
 import { startChat } from '../schemas'
@@ -7,16 +7,17 @@ import { checkUserChat } from '../auth'
 
 export default {
   Query: {
-    chats: (root, args, context, info) => {
+    chats: async (root, args, context, info) => {
       const { req } = context
       const { id } = req.headers.user
-      return Chat.find({ users: { $in: [id] } })
+      const chat = await Chat.find({ users: { $in: [id] } })
+      return chat
     },
     chat: async (root, args, context, info) => {
       const { chatId } = args
       const { req } = context
       const { id } = req.headers.user
-      const userExist = checkUserChat(id, chatId)
+      const userExist = await checkUserChat(id, chatId)
       if (userExist) {
         return Chat.findById(chatId)
       }
@@ -75,7 +76,6 @@ export default {
         if (result.deletedCount === 1) {
           return 'Chat has been deleted'
         }
-        return 'Chat could not be deleted'
       }
       return 'User or chat does not exist'
     },
