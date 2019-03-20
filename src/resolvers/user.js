@@ -7,6 +7,7 @@ import { signUp, signIn, objectId } from '../schemas'
 import { attemptSignIn, isAdmin } from '../auth'
 export default {
   Query: {
+    status: () => 'Chatter app is live and running',
     signedInUser: (root, args, context, info) => {
       const { req } = context
       return User.findById(req.headers.user.id)
@@ -30,7 +31,7 @@ export default {
         username: user.username,
         id: user.id
       }
-      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 60 * 60 })
+      const token = await jwt.sign(payload, JWT_SECRET, { expiresIn: 60 * 60 })
       payload.token = token
       return payload
     },
@@ -45,14 +46,11 @@ export default {
       const { req } = context
       const user = await isAdmin(req.headers.user.id)
       if (user) {
-        User.deleteOne({ _id: args.id }, (err, result) => {
-          if (err) {
-            return 'no user found'
-          }
-          if (result.deletedCount === 1) {
-            return 'user successfully deleted'
-          }
-        })
+        const result = await User.deleteOne({ _id: args.id })
+        if (result.deletedCount === 1) {
+          return 'User successfully deleted'
+        }
+        return 'no user found'
       }
     }
   },

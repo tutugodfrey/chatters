@@ -1,5 +1,6 @@
 import { Message } from '../models'
 import { checkUserChat } from '../auth'
+import { UserInputError } from 'apollo-server-express'
 
 export default {
   Query: {
@@ -30,11 +31,12 @@ export default {
       const { body, chatId } = args
       const { req } = context
       const { id } = req.headers.user
-      const userExist = checkUserChat(id, chatId)
+      const userExist = await checkUserChat(id, chatId)
       if (userExist) {
         const message = await Message.create({ body, sender: id, chat: chatId })
         return message
       }
+      throw new UserInputError('Chat does not exist.')
     },
     updateMessage: async (root, args, context, info) => {
       const { messageId, body } = args
@@ -47,8 +49,9 @@ export default {
       const options = {
         new: true
       }
-      const message = Message.findById(messageId)
-      const userExist = checkUserChat(id, message.chat)
+      const message = await Message.findById(messageId)
+      if (!message) throw new UserInputError('Message does not exist.')
+      const userExist = await checkUserChat(id, message.chat)
       if (userExist) {
         const newMessage = await Message.findOneAndUpdate(query, data, options)
         return newMessage
@@ -58,14 +61,14 @@ export default {
       const { messageId } = args
       const { req } = context
       const { id } = req.headers.user
-      const message = Message.findById(messageId)
+      const message = await Message.findById(messageId)
+      if (!message) throw new UserInputError('Message does not exist.')
       const userExist = await checkUserChat(id, message.chat)
       if (userExist) {
         const result = await Message.deleteOne({ _id: messageId })
         if (result.deletedCount === 1) {
-          return 'Message deleted'
+          return 'Message has be deleted'
         }
-        return 'Message does not exist'
       }
     }
   },

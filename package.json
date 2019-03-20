@@ -4,26 +4,32 @@
   "description": "A chatting application build with graphQL",
   "main": "src/index.js",
   "dependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
     "apollo-server-express": "^2.4.2",
     "bcryptjs": "^2.4.3",
-    "connect-redis": "^3.4.0",
     "dotenv-safe": "^6.1.0",
     "esm": "^3.2.5",
     "express": "^4.16.4",
-    "express-session": "^1.15.6",
     "graphql": "^14.1.1",
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.0",
     "mongoose": "^5.4.17",
     "nodemon": "^1.18.10",
-    "redis": "^2.8.0",
+    "save-dev": "^2.0.0",
     "standard": "^12.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.1",
+    "mocha": "^6.0.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test mocha -r esm src/__tests__ --exit",
+    "pretest": "node -r esm src/helpers.js",
     "start": "NODE_ENV=production node -r esm",
-    "dev": "NODE_ENV=development APP_PORT=5000 nodemon -r esm",
+    "dev": "NODE_ENV=development APP_PORT=5000 nodemon -r esm src/app",
     "seed": "node -r esm ./src/seed/user"
   },
   "repository": {
@@ -32,9 +38,10 @@
   },
   "keywords": [
     "Graphql",
+    "Express",
     "Javascript",
     "Mongoose",
-    "Redis"
+    "MongoDB"
   ],
   "author": "Tutu Godfrey",
   "license": "ISC",

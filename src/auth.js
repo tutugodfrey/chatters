@@ -43,7 +43,7 @@ export const attemptSignIn = async (email, password) => {
     username: user.username,
     id: user.id
   }
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 60 * 60 })
+  const token = await jwt.sign(payload, JWT_SECRET, { expiresIn: 60 * 60 })
   user.token = token
   return user
 }
