@@ -9,6 +9,7 @@ import {
 } from './config'
 import schemaDirectives from './directives'
 
+console.log(DATABASE, 'HHHHHHHHHHHHHHHHH')
 mongoose.Promise = global.Promise
 mongoose.connect(DATABASE, {
   useNewUrlParser: true
