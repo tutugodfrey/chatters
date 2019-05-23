@@ -98,7 +98,8 @@ export default {
   },
   Chat: {
     messages: (chat, args, context, info) => {
-      return Message.find({ chat: chat.id })
+      const message =  Message.find({ chat: chat.id })
+      return message
     },
     users: async (chat, args, context, info) => {
       return (await chat.populate('users').execPopulate()).users

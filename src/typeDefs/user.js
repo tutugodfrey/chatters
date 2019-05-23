@@ -11,6 +11,7 @@ extend type Mutation {
   signUp(email: String!, username: String!, name: String! password: String!): User
   signIn(email: String!, password: String!): User
   deleteUser(id: ID!): String @auth
+  updateUser(username: String, name: String): User @auth
 }
 
 type User {

@@ -52,7 +52,23 @@ export default {
         }
         return 'no user found'
       }
-    }
+    },
+
+    updateUser: async (root, args, context, info) => {
+      const { req }  = context
+      const { id } = req.headers.user
+      const { username, name } = args
+      const query = { _id: id }
+      const data = {
+        name,
+        username
+      }
+      const options = {
+        new: true
+      }
+      const user = await User.findOneAndUpdate(query, data, options)
+      return user
+    },
   },
   User: {
     chats: async (user, args, context, info) => {
