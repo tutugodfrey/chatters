@@ -5,6 +5,9 @@
 version: 2
 jobs:
   build:
+    environment:
+      CC_TEST_REPORTER_ID: d0d76fd55dba72baf6775f9aacb97bd94ba54e55838896ef8e72202028e5c220
+      COVERALL_REPO_TOKEN: mqBodul4ncKegQo9otnBpscLdKxcLi5ji
     docker:
       # specify the version you desire here
       - image: circleci/node:9.10.0
@@ -26,12 +29,23 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: yarn install
+      - run: npm install
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run tests!
-      - run: yarn test
+      - run:
+          name: Setup Code Climate test-reporter
+          command:
+          # download test reporter as a static binary
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./cc-test-reporter before-build
+      - run: npm test
+      - run:
+          name: Run tests
+          command: |
+           ./cc-test-reporter before-build
+           npm run coverage
+           ./cc-test-reporter after-build --coverage-input-type clover --exit-code $?
