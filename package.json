@@ -37,6 +37,7 @@
     "dev": "NODE_ENV=development APP_PORT=5000 nodemon -r esm src/app",
     "seed": "node -r esm ./src/seed/user",
     "coverage": "nyc npm run test && nyc report --reporter=lcov",
+    "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "coverage2": "nyc npm run test && nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
