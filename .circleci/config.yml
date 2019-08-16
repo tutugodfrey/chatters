@@ -41,9 +41,9 @@ jobs:
           # download test reporter as a static binary
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter;
             chmod +x ./cc-test-reporter;
-      - run: npm test
+      # - run: npm test  
       - run:
-          name: Run tests
+          name: Run tests and generate code coverage report with nyc
           command:
            ./cc-test-reporter before-build
       - run: npm run coverage
@@ -52,3 +52,5 @@ jobs:
           command:
             ./cc-test-reporter  after-build --coverage-input-type lcov
             # ./cc-test-reporter  after-build --coverage-input-type lcov .coverage/lcov.info
+      # Send coverage report to coveralls
+      - run: cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js

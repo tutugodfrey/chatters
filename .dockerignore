@@ -5,3 +5,5 @@ Dockerfile
 .gitignore
 .circleci
 .dockerignore
+.nyc_output
+coverage
