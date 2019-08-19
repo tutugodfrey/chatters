@@ -38,7 +38,7 @@ LABEL maintainer=godfrey_tutu@yahoo.com
 # RUN npm run seed
 
 # export port for listening
-EXPOSE 8000
+EXPOSE $APP_PORT
 
 # start the application
 CMD ["npm", "start"]
