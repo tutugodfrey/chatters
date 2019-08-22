@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8s-config
+data:
+  ADMIN_EMAIL: teststutug@yahoo.com
+  ADMIN_USERNAME: teststutug
+  ADMIN_NAME: Tutu Godfrey

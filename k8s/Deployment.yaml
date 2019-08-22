@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatter-deployment
+  labels:
+    app: chatter
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: chatter
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: chatter
+    spec:
+      containers:
+      - name: chatters
+        image: tutug/chatters:latest
+        ports:
+          - containerPort: 8000
+        env:
+          - name: ADMIN_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: k8s-config
+                key: ADMIN_USERNAME
+          - name: ADMIN_PASS
+            valueFrom:
+              secretKeyRef:
+                name: chatter-cred-sec
+                key: admin_pass
+          - name: ADMIN_EMAIL
+            valueFrom:
+              configMapKeyRef:
+                name: k8s-config
+                key: ADMIN_EMAIL
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: chatter-cred-sec
+                key: database_url
