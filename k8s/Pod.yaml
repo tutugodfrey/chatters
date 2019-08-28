@@ -1,0 +1,12 @@
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: chatter-fe-pod
+#   labels:
+#     app: chatter
+# spec:
+#   containers:
+#     - name: chatters-container
+#       image: tutug/chatters:latest
+#       ports:
+#       - containerPort: 8000
