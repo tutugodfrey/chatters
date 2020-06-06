@@ -6,7 +6,7 @@
   "dependencies": {
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
-    "apollo-server-express": "^2.4.2",
+    "apollo-server-express": "^2.14.2",
     "bcryptjs": "^2.4.3",
     "dotenv-safe": "^6.1.0",
     "esm": "^3.2.5",
